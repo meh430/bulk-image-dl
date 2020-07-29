@@ -32,13 +32,16 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     console.log(changes);
     if ("downloadLinks" in changes) {
         selectedImages = changes["downloadLinks"].newValue;
-        if (selectedImages.length >= 1) {
-            //clear button
+        if (selectedImages.length >= 1 && document.getElementById("clearButton") == undefined) {
             let clrButton = document.createElement("button")
             clrButton.id = "clearButton"
-            clrButton.createTextNode("Clear Images")
+            clrButton.appendChild(document.createTextNode("Clear Images"))
+            clrButton.addEventListener("click", event => {
+                selectedImages = []
+                chrome.storage.local.set({downloadLinks: []}, () => console.log("cleared images"))
+            })
             insertAfter(clrButton, document.getElementById("divider"))
-        } else {
+        } else if(selectedImages.length == 0) {
             let clrButton = document.getElementById("clearButton")
             clrButton.parentNode.removeChild(clrButton)
         }
