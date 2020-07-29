@@ -1,5 +1,5 @@
 button {
-    width: 185px;
+    width: 150px;
     font-family: 'Nunito', sans-serif;
     margin: 6px;
     border-radius: 8px;
@@ -39,11 +39,11 @@ hr {
     width: 250px;
     word-break: break-all;
     margin: 0;
-    border: 1px solid white;
     border-radius: 10px;
-    margin-top: 3px;
-    padding: 3px;
+    margin-top: 6px;
+    padding: 6px;
     color: white;
+    background-color: #2D2E31;
     font-family: 'Nunito', sans-serif;
 }
 

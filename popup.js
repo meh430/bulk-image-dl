@@ -1,11 +1,27 @@
-//right click to add image src to list, save list in storage
-//when storage changes, update the list?
+//warning for nothing to download
+//TODO: download all in current page?
+//back button, download button, list of image with check boxes?
+//when scrape pressed, inject content script that then ends another message?
 const formats = ["png", "jpg", "gif"];
 let selectedImages = [];
 let dlOpenButton = document.getElementById("downloadOpen");
 let dlSelButton = document.getElementById("downloadSelected");
+let dlPage = document.getElementById("downloadPage");
 
 let listCont = document.getElementById('listContainer')
+
+chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
+    if ('images' in message) {
+        message.images.forEach(image => {
+            if (!selectedImages.includes(image)) {
+                selectedImages.push(image);
+            }
+        })
+        chrome.storage.sync.set({ downloadLinks: selectedImages }, () => {
+            console.log('Added images on page')
+        })
+    }
+})
 
 chrome.storage.sync.get(['downloadLinks'], links => {
     selectedImages = links.downloadLinks
@@ -19,7 +35,6 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
         updateUL(selectedImages)
     }
 })
-
 
 dlOpenButton.addEventListener("click", (event) => {
     chrome.tabs.query({}, (tabs) => {
@@ -51,6 +66,11 @@ dlSelButton.addEventListener("click", event => {
     })
 })
 
+dlPage.addEventListener("click", (event) => {
+    console.log(selectedImages)
+    chrome.tabs.executeScript({code: "let imageTags = document.querySelectorAll('img');let urls = [];for (let i = 0; i < imageTags.length; i++) {urls.push(imageTags[i].src);}chrome.runtime.sendMessage({ images: urls }, (response) => console.log(response));"})
+})
+
 function deleteChildren(node) {
     console.log(node);
     while (node.firstChild) {
@@ -62,10 +82,13 @@ function updateUL(list) {
     deleteChildren(listCont);
     let item = {};
     console.log(list);
-    list.forEach((word) => {
+    list.forEach((url) => {
         item = document.createElement("li");
         item.className = "itemStyle";
-        item.appendChild(document.createTextNode(word));
+        //item.appendChild(document.createTextNode(word));
+        itemImage = document.createElement("img")
+        itemImage.setAttribute("src", url)
+        item.appendChild(itemImage)
         item.addEventListener("mouseover", (event) => {
             const clickedElement = event.target || event.srcElement;
             clickedElement.style.color = "red";
@@ -76,9 +99,9 @@ function updateUL(list) {
         });
         item.addEventListener("click", (event) => {
             const clickedElement = event.target || event.srcElement;
-            const clickedText = clickedElement.textContent;
+            const clickedImage = clickedElement.src
             let clickedIndex = -1;
-            clickedIndex = selectedImages.indexOf(clickedText);
+            clickedIndex = selectedImages.indexOf(clickedImage);
             if (clickedIndex > -1) {
                 selectedImages.splice(clickedIndex, 1);
             }
