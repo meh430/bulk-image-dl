@@ -1,12 +1,27 @@
 //right click to add image src to list, save list in storage
 //when storage changes, update the list?
 const formats = ["png", "jpg", "gif"];
-let openImages = [];
 let selectedImages = [];
+let dlOpenButton = document.getElementById("downloadOpen");
+let dlSelButton = document.getElementById("downloadSelected");
 
-let dlButton = document.getElementById("downloadButton");
+let listCont = document.getElementById('listContainer')
 
-dlButton.addEventListener("click", (event) => {
+chrome.storage.sync.get(['downloadLinks'], links => {
+    selectedImages = links.downloadLinks
+    updateUL(selectedImages);
+})
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    console.log(changes)
+    if ('downloadLinks' in changes) {
+        selectedImages = changes['downloadLinks'].newValue
+        updateUL(selectedImages)
+    }
+})
+
+
+dlOpenButton.addEventListener("click", (event) => {
     chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
             const currUrl = tab.url;
@@ -25,6 +40,16 @@ dlButton.addEventListener("click", (event) => {
     });
 });
 
+dlSelButton.addEventListener("click", event => {
+    selectedImages.forEach(url => {
+        chrome.downloads.download({ url: url }, (downloadId) => console.log(`Downloaded ${url}`))
+    })
+
+    selectedImages = []
+    chrome.storage.sync.set({downloadLinks: []}, () => {
+        console.log("downloaded all selected");
+    })
+})
 
 function deleteChildren(node) {
     console.log(node);
@@ -53,21 +78,13 @@ function updateUL(list) {
             const clickedElement = event.target || event.srcElement;
             const clickedText = clickedElement.textContent;
             let clickedIndex = -1;
-            if (viewingWords) {
-                clickedIndex = blockedWords.indexOf(clickedText);
-                if (clickedIndex > -1) {
-                    blockedWords.splice(clickedIndex, 1);
-                }
-                updateUL(blockedWords);
-            } else {
-                clickedIndex = blockedUrls.indexOf(clickedText);
-                if (clickedIndex > -1) {
-                    blockedUrls.splice(clickedIndex, 1);
-                }
-                updateUL(blockedUrls);
+            clickedIndex = selectedImages.indexOf(clickedText);
+            if (clickedIndex > -1) {
+                selectedImages.splice(clickedIndex, 1);
             }
+            
 
-            chrome.storage.sync.set({ bWords: blockedWords, bUrls: blockedUrls, globalOff: filterOff }, () => {
+            chrome.storage.sync.set({downloadLinks: selectedImages }, () => {
                 console.log("Updated deletion");
             });
         });

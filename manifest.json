@@ -6,7 +6,7 @@
     "permissions": ["declarativeContent", "activeTab", "tabs", "http://*/*",
         "https://*/*", "storage", "downloads", "contextMenus"],
     "background": {
-        "scripts": ["startup.js", "selectImage.js"],
+        "scripts": ["startup.js"],
         "persistent": false
     },
     "page_action": {
