@@ -3,10 +3,21 @@
     "version": "1.0",
     "description": "A script that downloads images in bulk",
     "manifest_version": 2,
-    "permissions": ["declarativeContent", "activeTab", "tabs", "http://*/*",
-        "https://*/*", "storage", "downloads", "contextMenus"],
+    "permissions": [
+        "declarativeContent",
+        "activeTab",
+        "tabs",
+        "http://*/*",
+        "https://*/*",
+        "storage",
+        "downloads",
+        "contextMenus",
+        "unlimitedStorage"
+    ],
     "background": {
-        "scripts": ["startup.js"],
+        "scripts": [
+            "startup.js"
+        ],
         "persistent": false
     },
     "page_action": {
