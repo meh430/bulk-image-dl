@@ -4,10 +4,10 @@
     "description": "A script that downloads images in bulk",
     "manifest_version": 2,
     "permissions": ["declarativeContent", "activeTab", "tabs", "http://*/*",
-        "https://*/*", "storage", "downloads"],
+        "https://*/*", "storage", "downloads", "contextMenus"],
     "background": {
-        "scripts": ["startup.js"],
-        "persistent": true
+        "scripts": ["startup.js", "selectImage.js"],
+        "persistent": false
     },
     "page_action": {
         "default_popup": "popup.html"
