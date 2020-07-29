@@ -1,3 +1,4 @@
+//TODO: add minimum width and height filter?
 const formats = ["png", "jpg", "gif"];
 let selectedImages = [];
 let dlOpenButton = document.getElementById("downloadOpen");
@@ -5,7 +6,6 @@ let dlSelButton = document.getElementById("downloadSelected");
 let dlPage = document.getElementById("downloadPage");
 
 let listCont = document.getElementById("listContainer");
-
 chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
     if ("images" in message) {
         message.images.forEach((image) => {
@@ -26,25 +26,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
 chrome.storage.local.get(["downloadLinks"], (links) => {
     selectedImages = links.downloadLinks;
     updateUL(selectedImages);
+    displayClearButton();
 });
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
     console.log(changes);
     if ("downloadLinks" in changes) {
         selectedImages = changes["downloadLinks"].newValue;
-        if (selectedImages.length >= 1 && document.getElementById("clearButton") == undefined) {
-            let clrButton = document.createElement("button")
-            clrButton.id = "clearButton"
-            clrButton.appendChild(document.createTextNode("Clear Images"))
-            clrButton.addEventListener("click", event => {
-                selectedImages = []
-                chrome.storage.local.set({downloadLinks: []}, () => console.log("cleared images"))
-            })
-            insertAfter(clrButton, document.getElementById("divider"))
-        } else if(selectedImages.length == 0) {
-            let clrButton = document.getElementById("clearButton")
-            clrButton.parentNode.removeChild(clrButton)
-        }
+        displayClearButton();
         updateUL(selectedImages);
     }
 });
@@ -132,4 +121,20 @@ function updateUL(list) {
 
 function insertAfter(newNode, refNode) {
     refNode.parentNode.insertBefore(newNode, refNode.nextSibling);
+}
+
+function displayClearButton() {
+    if (selectedImages.length >= 1 && document.getElementById("clearButton") == undefined) {
+        let clrButton = document.createElement("button");
+        clrButton.id = "clearButton";
+        clrButton.appendChild(document.createTextNode("Clear Images"));
+        clrButton.addEventListener("click", (event) => {
+            selectedImages = [];
+            chrome.storage.local.set({ downloadLinks: [] }, () => console.log("cleared images"));
+        });
+        insertAfter(clrButton, document.getElementById("divider"));
+    } else if (selectedImages.length == 0 && document.getElementById("clearButton") != undefined) {
+        let clrButton = document.getElementById("clearButton");
+        clrButton.parentNode.removeChild(clrButton);
+    }
 }
