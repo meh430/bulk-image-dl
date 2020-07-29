@@ -83,10 +83,9 @@ dlPage.addEventListener("click", (event) => {
     console.log(selectedImages);
     chrome.tabs.executeScript({
         code:
-            "let imageTags = document.querySelectorAll('img');let urls = [];for (let i = 0; i < imageTags.length; i++) {urls.push(imageTags[i].src);}chrome.runtime.sendMessage({ images: urls }, (response) => console.log(response));",
+            "let urls = [];document.querySelectorAll('img').forEach(img => urls.push(img.src));chrome.runtime.sendMessage({ images: urls }, (response) => console.log(response));",
     });
 });
-
 function deleteChildren(node) {
     console.log(node);
     while (node.firstChild) {
