@@ -3,8 +3,13 @@
 
 <head>
     <script src="https://kit.fontawesome.com/aa3aeafa8a.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <head>
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'"
+        />
+        <link rel="stylesheet" type="text/css" href="styles.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
 </head>
 
 <body>
@@ -24,12 +29,11 @@
         </button>
         <hr id="divider"/>
         <ul id="listContainer">
-            <li class="itemStyle">item</li>
         </ul>
+        <h2 id="noImageOpen" style="display:none;">No images found...</h2>
+    </div>
         <script src="toaster.js"></script>
         <script src="popup.js"></script>
-    </div>
-
 </body>
 
 </html>

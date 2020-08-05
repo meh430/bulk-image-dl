@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener(() => {
         ]);
     });
 
-    chrome.sync.local.set({dlTab: true, closeTab: false, minWidth: 100, minHeight: 100}, () => console.log("Set up sync storage"))
+    chrome.storage.sync.set({dlTab: true, closeTab: true, minWidth: 100, minHeight: 100}, () => console.log("Set up sync storage"))
 
     chrome.storage.local.set(
         {

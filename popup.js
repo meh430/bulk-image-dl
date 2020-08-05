@@ -1,26 +1,42 @@
-import {toaster} from './toaster'
-//TODO: add minimum width and height filter?
-//TODO: make ui look a little nicer?
-//TODO: delete from selected if open?
 const formats = ["png", "jpg", "svg", "gif"];
 let selectedImages = [];
 let dlOpenButton = document.getElementById("downloadOpen");
 let dlSelButton = document.getElementById("downloadSelected");
 let dlPage = document.getElementById("downloadPage");
 let settings = document.getElementById("settingsIcon");
-
 let listCont = document.getElementById("listContainer");
+let noImageHeading = document.getElementById('noImageOpen');
+
+let minWidth = 100;
+let minHeight = 100;
+let dlTab = true;
+let closeTabs = true;
+
+displayClearButton()
+initUi();
 chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
     if ("images" in message) {
+        console.log(message.images)
         message.images.forEach((image) => {
-            if (!selectedImages.includes(image)) {
-                selectedImages.push(image);
+            console.log(image)
+            if (!selectedImages.includes(image.url) && image.width >= minWidth && image.height >= minHeight) {
+                selectedImages.push(image.url);
             }
         });
+
+        if (selectedImages.length == 0) {
+            noImageHeading.style.display = "block"
+            setTimeout(() => {
+                noImageHeading.style.display = "none"
+            }, 2000);
+        }
+
         chrome.storage.local.set({ downloadLinks: selectedImages }, () => {
             console.log("Added images on page");
         });
     }
+
+    initUi();
 
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
@@ -34,6 +50,7 @@ chrome.storage.local.get(["downloadLinks"], (links) => {
 });
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
+    initUi();
     console.log(changes);
     if ("downloadLinks" in changes) {
         selectedImages = changes["downloadLinks"].newValue;
@@ -41,8 +58,8 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
         updateUL(selectedImages);
     }
 });
-
 dlOpenButton.addEventListener("click", (event) => {
+    let dlCount = 0
     chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
             const currUrl = tab.url;
@@ -55,9 +72,21 @@ dlOpenButton.addEventListener("click", (event) => {
             }
 
             if (downloadable) {
-                chrome.downloads.download({ url: currUrl }, (downloadId) => chrome.tabs.remove(tab.id));
+                chrome.downloads.download({ url: currUrl }, (downloadId) => {
+                    dlCount += 1
+                    if (closeTabs) {
+                        chrome.tabs.remove(tab.id);
+                    }
+                });
             }
         });
+
+        if (!dlCount) {
+            noImageHeading.style.display = "block"
+            setTimeout(() => {
+                noImageHeading.style.display = "none"
+            }, 2000);
+        }
     });
 });
 
@@ -76,13 +105,13 @@ dlPage.addEventListener("click", (event) => {
     console.log(selectedImages);
     chrome.tabs.executeScript({
         code:
-            "let urls = [];document.querySelectorAll('img').forEach(img => urls.push(img.src));chrome.runtime.sendMessage({ images: urls }, (response) => console.log(response));",
+            "let imgs = [];document.querySelectorAll('img').forEach(img => imgs.push({url:img.src, width: img.naturalWidth, height: img.naturalHeight}));chrome.runtime.sendMessage({ images: imgs }, (response) => console.log(response));",
     });
 });
 
 settings.addEventListener("click", (event) => {
     chrome.runtime.openOptionsPage();
-})
+});
 
 function deleteChildren(node) {
     console.log(node);
@@ -134,16 +163,30 @@ function insertAfter(newNode, refNode) {
 
 function displayClearButton() {
     if (selectedImages.length >= 1 && document.getElementById("clearButton") == undefined) {
+        dlSelButton.style.display = "block"
         let clrButton = document.createElement("button");
         clrButton.id = "clearButton";
         clrButton.appendChild(document.createTextNode("Clear Images"));
         clrButton.addEventListener("click", (event) => {
             selectedImages = [];
             chrome.storage.local.set({ downloadLinks: [] }, () => console.log("cleared images"));
+            displayClearButton()
         });
         insertAfter(clrButton, document.getElementById("divider"));
     } else if (selectedImages.length == 0 && document.getElementById("clearButton") != undefined) {
         let clrButton = document.getElementById("clearButton");
         clrButton.parentNode.removeChild(clrButton);
+    } else if (selectedImages.length == 0) {
+        dlSelButton.style.display = "none"
     }
+}
+
+function initUi() {
+    chrome.storage.sync.get(["dlTab", "closeTab", "minWidth", "minHeight"], (settings) => {
+        minWidth = settings.minWidth;
+        minHeight = settings.minHeight;
+        dlTab = settings.dlTab;
+        closeTabs = settings.closeTabs;
+        dlOpenButton.style.display = settings.dlTab ? "block" : "none";
+    });
 }
