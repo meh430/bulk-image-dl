@@ -15,12 +15,15 @@
         "unlimitedStorage"
     ],
     "background": {
-        "scripts": [
-            "startup.js"
-        ],
+        "scripts": ["startup.js"],
         "persistent": false
     },
     "page_action": {
         "default_popup": "popup.html"
-    }
+    },
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": false
+    },
+    "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js https://kit.fontawesome.com/aa3aeafa8a.js; object-src 'self'"
 }

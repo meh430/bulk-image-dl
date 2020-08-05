@@ -1,9 +1,13 @@
+import {toaster} from './toaster'
 //TODO: add minimum width and height filter?
-const formats = ["png", "jpg", "gif"];
+//TODO: make ui look a little nicer?
+//TODO: delete from selected if open?
+const formats = ["png", "jpg", "svg", "gif"];
 let selectedImages = [];
 let dlOpenButton = document.getElementById("downloadOpen");
 let dlSelButton = document.getElementById("downloadSelected");
 let dlPage = document.getElementById("downloadPage");
+let settings = document.getElementById("settingsIcon");
 
 let listCont = document.getElementById("listContainer");
 chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
@@ -75,6 +79,11 @@ dlPage.addEventListener("click", (event) => {
             "let urls = [];document.querySelectorAll('img').forEach(img => urls.push(img.src));chrome.runtime.sendMessage({ images: urls }, (response) => console.log(response));",
     });
 });
+
+settings.addEventListener("click", (event) => {
+    chrome.runtime.openOptionsPage();
+})
+
 function deleteChildren(node) {
     console.log(node);
     while (node.firstChild) {

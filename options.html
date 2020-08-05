@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'"
+        />
+
+        <link href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="styles.css" />
+
+        <!-- Compiled and minified CSS -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+        />
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <style>
+            #options {
+                padding: 14px;
+                background-color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: start;
+                justify-content: start;
+            }
+            #saveWrapper {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="options">
+            <label>
+                <input type="checkbox" />
+                <span>Download images open in new tabs</span>
+            </label>
+            <br>
+            <label for="heightInput">Minimum Image Height:</label>
+            <input type="number" id="heightInput" name="heightInput" value="100" />
+            <label for="widthInput">Minimum Image Width:</label>
+            <input type="number" id="widthInput" name="widthInput" value="100" />
+            <div id="saveWrapper">
+            <button id="saveButton" style="font-size: 18px;">save</button>
+            </div>
+            <script src="toaster.js"></script>
+            <script src="options.js"></script>
+        </div>
+    </body>
+</html>
