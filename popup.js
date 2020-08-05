@@ -51,6 +51,7 @@ chrome.storage.local.get(["downloadLinks"], (links) => {
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
     initUi();
+    displayClearButton()
     console.log(changes);
     if ("downloadLinks" in changes) {
         selectedImages = changes["downloadLinks"].newValue;
