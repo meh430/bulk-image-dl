@@ -6,7 +6,6 @@ let widthInput = document.getElementById("widthInput");
 
 let toastCount = 0;
 
-
 chrome.storage.sync.get(["dlTab", "closeTab", "minWidth", "minHeight"], (settings) => {
     checkDlTabImage.checked = settings.dlTab;
     checkCloseTab.checked = settings.closeTab;
@@ -23,7 +22,6 @@ chrome.storage.sync.get(["dlTab", "closeTab", "minWidth", "minHeight"], (setting
         saveInfo();
     });
 });
-
 
 function saveInfo() {
     let minWidth = widthInput.value;

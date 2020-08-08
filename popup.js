@@ -5,29 +5,29 @@ let dlSelButton = document.getElementById("downloadSelected");
 let dlPage = document.getElementById("downloadPage");
 let settings = document.getElementById("settingsIcon");
 let listCont = document.getElementById("listContainer");
-let noImageHeading = document.getElementById('noImageOpen');
+let noImageHeading = document.getElementById("noImageOpen");
 
 let minWidth = 100;
 let minHeight = 100;
 let dlTab = true;
 let closeTabs = true;
 
-displayClearButton()
+displayClearButton();
 initUi();
 chrome.runtime.onMessage.addListener((message, sender, sendRes) => {
     if ("images" in message) {
-        console.log(message.images)
+        console.log(message.images);
         message.images.forEach((image) => {
-            console.log(image)
+            console.log(image);
             if (!selectedImages.includes(image.url) && image.width >= minWidth && image.height >= minHeight) {
                 selectedImages.push(image.url);
             }
         });
 
         if (selectedImages.length == 0) {
-            noImageHeading.style.display = "block"
+            noImageHeading.style.display = "block";
             setTimeout(() => {
-                noImageHeading.style.display = "none"
+                noImageHeading.style.display = "none";
             }, 2000);
         }
 
@@ -51,7 +51,7 @@ chrome.storage.local.get(["downloadLinks"], (links) => {
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
     initUi();
-    displayClearButton()
+    displayClearButton();
     console.log(changes);
     if ("downloadLinks" in changes) {
         selectedImages = changes["downloadLinks"].newValue;
@@ -60,7 +60,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
 });
 dlOpenButton.addEventListener("click", (event) => {
-    let dlCount = 0
+    let found = false;
     chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
             const currUrl = tab.url;
@@ -68,13 +68,13 @@ dlOpenButton.addEventListener("click", (event) => {
             for (let i = 0; i < formats.length; i++) {
                 if (currUrl.includes(formats[i])) {
                     downloadable = true;
+                    found = true
                     break;
                 }
             }
 
             if (downloadable) {
                 chrome.downloads.download({ url: currUrl }, (downloadId) => {
-                    dlCount += 1
                     if (closeTabs) {
                         chrome.tabs.remove(tab.id);
                     }
@@ -82,10 +82,10 @@ dlOpenButton.addEventListener("click", (event) => {
             }
         });
 
-        if (!dlCount) {
-            noImageHeading.style.display = "block"
+        if (!found) {
+            noImageHeading.style.display = "block";
             setTimeout(() => {
-                noImageHeading.style.display = "none"
+                noImageHeading.style.display = "none";
             }, 2000);
         }
     });
@@ -164,21 +164,21 @@ function insertAfter(newNode, refNode) {
 
 function displayClearButton() {
     if (selectedImages.length >= 1 && document.getElementById("clearButton") == undefined) {
-        dlSelButton.style.display = "block"
+        dlSelButton.style.display = "block";
         let clrButton = document.createElement("button");
         clrButton.id = "clearButton";
         clrButton.appendChild(document.createTextNode("Clear Images"));
         clrButton.addEventListener("click", (event) => {
             selectedImages = [];
             chrome.storage.local.set({ downloadLinks: [] }, () => console.log("cleared images"));
-            displayClearButton()
+            displayClearButton();
         });
         insertAfter(clrButton, document.getElementById("divider"));
     } else if (selectedImages.length == 0 && document.getElementById("clearButton") != undefined) {
         let clrButton = document.getElementById("clearButton");
         clrButton.parentNode.removeChild(clrButton);
     } else if (selectedImages.length == 0) {
-        dlSelButton.style.display = "none"
+        dlSelButton.style.display = "none";
     }
 }
 
@@ -187,7 +187,7 @@ function initUi() {
         minWidth = settings.minWidth;
         minHeight = settings.minHeight;
         dlTab = settings.dlTab;
-        closeTabs = settings.closeTabs;
+        closeTabs = settings.closeTab;
         dlOpenButton.style.display = settings.dlTab ? "block" : "none";
     });
 }

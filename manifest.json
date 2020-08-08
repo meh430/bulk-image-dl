@@ -16,7 +16,7 @@
     ],
     "background": {
         "scripts": ["startup.js"],
-        "persistent": false
+        "persistent": true
     },
     "page_action": {
         "default_popup": "popup.html"
