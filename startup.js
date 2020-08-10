@@ -20,16 +20,16 @@ chrome.runtime.onInstalled.addListener(() => {
             console.log("Set up local storage");
         }
     );
-
-    let conMenu = {
-        id: "imId",
-        title: "Add image to download list",
-        visible: true,
-        contexts: ["image"],
-    };
-
-    chrome.contextMenus.create(conMenu);
 });
+
+let conMenu = {
+    id: "imId",
+    title: "Add image to download list",
+    visible: true,
+    contexts: ["image"],
+};
+
+chrome.contextMenus.create(conMenu);
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if ("mediaType" in info && info["mediaType"] === "image" && info["srcUrl"] !== undefined) {
