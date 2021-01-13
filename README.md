@@ -12,4 +12,4 @@ A simple chrome extension that uses a script to download all images opened in a 
 <img src="https://media.discordapp.net/attachments/717487791491121162/741659697190535259/unknown.png?width=1150&height=619">
 
 ## How To Install
-- Coming soon...
+- Get it [here](https://chrome.google.com/webstore/detail/bulk-image-downloader/jeimgidkmgobaokpidmjojfjhhgchcan?hl=en-GB&authuser=4)
